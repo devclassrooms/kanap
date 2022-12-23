@@ -49,7 +49,7 @@ async function getOther()
     while(cmp < nextprod.length)
     {
       items5.innerHTML += 
-      `<a href="./product.html?id=${nextprod[cmp]._id}">
+       `<a href="./product.html?id=${nextprod[cmp]._id}">
         <article>
         <img width="200px" src="${nextprod[cmp].imageUrl}" alt="${nextprod[cmp].altTxt}">
         <h3 class="productName">${nextprod[cmp].name}</h3>

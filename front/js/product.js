@@ -1,7 +1,7 @@
 let theURL = window.location.search;
 const theId = new URLSearchParams(theURL).get("id");
 
-console.log(theId);
+console.log(theURL);
 
 function getColorFr(product)
 {
@@ -42,45 +42,71 @@ function getColorFr(product)
   return changeColor;
 }
 
-
 async function getProduct()
 {
   const response = await fetch(`http://localhost:3000/api/products/${theId}`);
   const product = await response.json();
-  console.log(product);
   
   const element = document.getElementsByClassName('item__img')[0];
   element.innerHTML += `<img src="${product.imageUrl}" alt="Photographie d'un canapé">`
   const nameElement = document.getElementById('title');
   nameElement.innerHTML = product.name;
   const thePrice = document.getElementById('price');
-  //console.log(thePrice);
   thePrice.innerHTML += product.price;
-  //console.log(thePrice);
   const descriptionElem = document.getElementById(`description`);
   descriptionElem.innerHTML = product.description;
-  /*let choseColor = document.getElementsByClassName('corlors-2');
-  choseColor.innerHTML += 
-  `<option value="vert">vert</option>`;
-  console.log(choseColor);*/
+  console.log(product);
 
-  let items3 = document.getElementById('colors')
+  const colorSelect = document.getElementById('colors')
   let i = 0;
   let changeColor = "none";
+  let theQuantity = 0;
+  let thePrices = 0;
+  let getId = "NULL";
+  let total = 0;
   while(i < product.colors.length)
   {
-      changeColor = getColorFr(product.colors[i])
-      items3.innerHTML += `<option value="${product.colors[i]}">${changeColor}</option>`;
-      console.log(product.colors[i]);
+      changeColor = getColorFr(product.colors[i]);
+      colorSelect.innerHTML += `<option value="${product.colors[i]}">${changeColor}</option>`;
       i++;
   }
   const addToBuy = document.getElementById("addToCart");
-  console.log(addToBuy);
-  addToBuy.addEventListener('click', () => console.log('hello'));
-  let theColors = document.getElementById("colors");
-  let typeColors = theColors.value
-  console.log(typeColors);
+  addToBuy.addEventListener('click', (i) => 
+  {
+    const theQuant = document.getElementById("quantity");
+    const colorSelect = document.getElementById("colors");
+    const selectedColor = colorSelect.value;
+    theQuantity = Number(theQuant.value);
+    getId = product._id;
   
+    if(colorSelect != "" && (theQuantity > 0 && theQuantity <= 100 && theQuantity != ""))
+    {
+        const cartString = localStorage.getItem('cart');
+        console.log(cartString);
+        let cart = JSON.parse(cartString || "[]");
+        let selectedItem = {
+            id : getId,
+            color : selectedColor,
+            quantity : theQuantity,
+
+        }
+        const itemExistIndex = cart.findIndex((item) => item.id === selectedItem.id && item.color === selectedItem.color);
+        if(itemExistIndex >= 0)
+        {
+            cart[itemExistIndex].quantity += theQuantity;
+        }
+        else
+        {
+            cart.push(selectedItem);
+        }
+        localStorage.setItem('cart', JSON.stringify(cart));
+        alert('Votre achat à été ajouté au panier');
+    }
+    else
+    {
+        alert('Veuillez selectionner une quantité et une couleur');
+    }
+  });
 }
 
 getProduct();
